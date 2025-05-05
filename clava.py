@@ -10,8 +10,8 @@ def key_chooser(text):
         continued = types.KeyboardButton('Далее')
         keyboard.add(continued)
     elif scenario[text] == 2:
-        button1 = types.KeyboardButton('1')
-        button2 = types.KeyboardButton('2')
+        button1 = types.KeyboardButton('Написать в чат, что у тебя не работает микрофон: Отлично! Преподаватель поверил тебе и спросил твоего одногруппника.')
+        button2 = types.KeyboardButton('Ответить на вопрос своими словами и попытаться заболтать преподавателя')
         keyboard.add(button1, button2)
     legend = types.KeyboardButton('Ресурсы')
     keyboard.add(legend)
