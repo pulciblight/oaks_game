@@ -37,6 +37,11 @@ def sex_assignment(message):
 def finally_game(message):
     user_id = message.from_user.id
     text = message.text
-    bot.send_message(user_id, scenario[text]['text'],
-                    reply_markup=key_chooser(scenario[text]['options']))
+    if 'picture' not in scenario[text].keys():
+        bot.send_message(user_id, scenario[text]['text'],
+                         reply_markup=key_chooser(scenario[text]['options']))
+    else:
+        bot.send_photo(user_id, scenario[text]['picture'],
+                       caption=scenario[text]['text'],
+                       reply_markup=key_chooser(scenario[text]['options']))
 bot.polling()
