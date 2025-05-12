@@ -1,1 +1,1 @@
-print('пиздец')
+import telebot
