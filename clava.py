@@ -14,8 +14,8 @@ basic = types.ReplyKeyboardMarkup(row_width=2)
 basic.add(types.KeyboardButton('Далее'))
 
 
-def key_chooser(num_of_choices):
-    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    for i in range(1, num_of_choices + 1):
-        keyboard.add(types.KeyboardButton(str(i)))
+def key_chooser(options):
+    keyboard = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
+    for option in options:
+        keyboard.add(types.KeyboardButton(option))
     return keyboard
