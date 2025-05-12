@@ -31,7 +31,7 @@ states_m = {
                 'Открыв холодильник, ты видишь один йогурт, '
                 'который купил ещё три недели назад в Пятёрочке. Рискнёшь?',
         'options': ['Съесть просроченный йогурт', 'Посмотреть в холодильнике соседа'],
-        'picture': 'https://github.com/pulciblight/lingdata/blob/main/mywebpage/notmyphoto.jpg'
+        'picture': 'https://raw.githubusercontent.com/pulciblight/lingdata/refs/heads/main/mywebpage/notmyphoto.jpg'
     },
     'Съесть просроченный йогурт': {
         'text': 'Было кисло и невкусно, но ты был настолько голоден, что доел до конца. '
@@ -82,7 +82,7 @@ states_f = {
                 'Открыв холодильник, ты видишь один йогурт, '
                 'который купила ещё три недели назад в Пятёрочке. Рискнёшь?',
         'options': ['Съесть просроченный йогурт', 'Посмотреть в холодильнике соседки'],
-        'picture': 'https://github.com/pulciblight/lingdata/blob/main/mywebpage/notmyphoto.jpg'
+        'picture': 'https://raw.githubusercontent.com/pulciblight/lingdata/refs/heads/main/mywebpage/notmyphoto.jpg'
     },
     'Съесть просроченный йогурт': {
         'text': 'Было кисло и невкусно, но ты была настолько голодна, что доела до конца. '
