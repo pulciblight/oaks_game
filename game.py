@@ -1,10 +1,11 @@
 import telebot
 from states import start_states, states_m, states_f
 from clava import key_chooser
+from resources import resource
 
 API_TOKEN = '7842674848:AAHaZqKSI2gplCBCPo89O52YJXauRz3DuNU'
 bot = telebot.TeleBot(API_TOKEN)
-
+user_resource = resource.copy()
 
 @bot.message_handler(commands=['start'])
 def handle_start(message):
@@ -35,13 +36,21 @@ def sex_assignment(message):
 
 @bot.message_handler(func=lambda message: message.text in scenario.keys())
 def finally_game(message):
+    global user_resource, res_not
     user_id = message.from_user.id
     text = message.text
+    res_not = ''
+    if 'conseq' in scenario[text].keys():
+        add_phrase = []
+        for key in scenario[text]['conseq']:
+            user_resource[key] += scenario[text]['conseq'][key]
+            add_phrase.append(f'\n{key}: {user_resource[key]}.')
+        res_not = "".join(add_phrase)
     if 'picture' not in scenario[text].keys():
-        bot.send_message(user_id, scenario[text]['text'],
+        bot.send_message(user_id, scenario[text]['text'] + res_not,
                          reply_markup=key_chooser(scenario[text]['options']))
     else:
         bot.send_photo(user_id, scenario[text]['picture'],
-                       caption=scenario[text]['text'],
+                       caption=scenario[text]['text'] + res_not,
                        reply_markup=key_chooser(scenario[text]['options']))
 bot.polling()
