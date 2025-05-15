@@ -1,5 +1,7 @@
 import telebot
-from states import start_states, states_m, states_f
+from states import start_states
+from m_states import states_m
+from f_states import states_f
 from clava import key_chooser
 from resources import resource
 
