@@ -1,22 +1,42 @@
 import telebot
+from telebot import types
 from states import start_states
 from m_states import states_m
 from f_states import states_f
 from clava import key_chooser
-from res import resource
+from resources import resource
 
 API_TOKEN = '7842674848:AAHaZqKSI2gplCBCPo89O52YJXauRz3DuNU'
 bot = telebot.TeleBot(API_TOKEN)
-user_resource = resource.copy()
+users_data = dict()
+basic_resources = resource
+scenario = start_states.copy()
 
-@bot.message_handler(commands=['start'])
+command_list = [
+    types.BotCommand('start', 'Начать новую игру'),
+    types.BotCommand('status', 'Посмотреть текущее состояние персонажа'),
+    types.BotCommand('help', 'Узнать легенду и создателей')
+]
+bot.set_my_commands(command_list)
+
+@bot.message_handler(commands=['start', 'status', 'help'])
 def handle_start(message):
+    global basic_resources
     user_id = message.from_user.id
-    bot.send_message(user_id, start_states['start']['text'],
-                    reply_markup=key_chooser(start_states['start']['options']))
+    if message.text == '/start':
+        users_data[user_id] = basic_resources
+        bot.send_message(user_id, scenario['start']['text'],
+                        reply_markup=key_chooser(start_states['start']['options']))
+    elif message.text == '/status':
+        current_status = []
+        for key in users_data[user_id]['Ресурсы']:
+            current_status.append(f'{key}: {users_data[user_id]['Ресурсы'][key]}')
+        current_status = '\n'.join(current_status)
+        bot.send_message(user_id, current_status)
+    elif message.text == '/help':
+        bot.send_message(user_id, scenario['Узнать легенду']['text'])
 
-
-@bot.message_handler(func=lambda message: message.text in ['Начать игру', 'Узнать легенду'])
+@bot.message_handler(func=lambda message: message.text in scenario.keys())
 def handle_message(message):
     user_id = message.from_user.id
     text = message.text
