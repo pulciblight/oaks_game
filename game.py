@@ -3,7 +3,7 @@ from states import start_states
 from m_states import states_m
 from f_states import states_f
 from clava import key_chooser
-from resources import resource
+from res import resource
 
 API_TOKEN = '7842674848:AAHaZqKSI2gplCBCPo89O52YJXauRz3DuNU'
 bot = telebot.TeleBot(API_TOKEN)
