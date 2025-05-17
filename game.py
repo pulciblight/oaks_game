@@ -18,10 +18,8 @@ command_list = [
 ]
 bot.set_my_commands(command_list)
 bot.set_chat_menu_button(menu_button=types.MenuButtonCommands())
-
 @bot.message_handler(commands=['start', 'status', 'help'])
-def handle_start(message):
-    global basic_resources
+def handle_commands(message):
     user_id = message.from_user.id
     if message.text == '/start':
         users_data[user_id] = basic_resources
@@ -37,12 +35,19 @@ def handle_start(message):
         bot.send_message(user_id, scenario['Узнать легенду']['text'])
 
 @bot.message_handler(func=lambda message: message.text in scenario.keys())
-def handle_message(message):
+def finally_game(message):
     user_id = message.from_user.id
     text = message.text
-    bot.send_message(user_id, start_states[text]['text'],
-                     reply_markup=key_chooser(start_states[text]['options']))
-
+    if 'conseq' in scenario[text].keys():
+        for key in scenario[text]['conseq']:
+            users_data[user_id]['Ресурсы'][key] += scenario[text]['conseq'][key]
+    if 'picture' not in scenario[text].keys():
+        bot.send_message(user_id, scenario[text]['text'],
+                         reply_markup=key_chooser(scenario[text]['options']))
+    else:
+        bot.send_photo(user_id, scenario[text]['picture'],
+                       caption=scenario[text]['text'],
+                       reply_markup=key_chooser(scenario[text]['options']))
 
 @bot.message_handler(func=lambda message: message.text in ['Женский', 'Мужской'])
 def sex_assignment(message):
@@ -50,29 +55,13 @@ def sex_assignment(message):
     user_id = message.from_user.id
     text = message.text
     if text == 'Женский':
-        scenario = states_f.copy()
+        users_data[user_id]['Пол'] = 'ж'
     elif text == 'Мужской':
-        scenario = states_m.copy()
-    bot.send_message(user_id, scenario[text]['text'],
-                     reply_markup=key_chooser(scenario[text]['options']))
-
-@bot.message_handler(func=lambda message: message.text in scenario.keys())
-def finally_game(message):
-    global user_resource, res_not
-    user_id = message.from_user.id
-    text = message.text
-    res_not = ''
-    if 'conseq' in scenario[text].keys():
-        add_phrase = []
-        for key in scenario[text]['conseq']:
-            user_resource[key] += scenario[text]['conseq'][key]
-            add_phrase.append(f'\n{key}: {user_resource[key]}.')
-        res_not = "".join(add_phrase)
-    if 'picture' not in scenario[text].keys():
-        bot.send_message(user_id, scenario[text]['text'] + res_not,
-                         reply_markup=key_chooser(scenario[text]['options']))
-    else:
-        bot.send_photo(user_id, scenario[text]['picture'],
-                       caption=scenario[text]['text'] + res_not,
-                       reply_markup=key_chooser(scenario[text]['options']))
+        users_data[user_id]['Пол'] = 'м'
+    if users_data[user_id]['Пол'] == 'ж':
+        scenario.update(states_f)
+    elif users_data[user_id]['Пол'] == 'м':
+        scenario.update(states_m)
+    bot.send_message(user_id, scenario['Начало']['text'],
+                     reply_markup=key_chooser(scenario['Начало']['options']))
 bot.polling()
