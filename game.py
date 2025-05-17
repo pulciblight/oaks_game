@@ -11,13 +11,13 @@ bot = telebot.TeleBot(API_TOKEN)
 users_data = dict()
 basic_resources = resource
 scenario = start_states.copy()
-
 command_list = [
     types.BotCommand('start', 'Начать новую игру'),
     types.BotCommand('status', 'Посмотреть текущее состояние персонажа'),
     types.BotCommand('help', 'Узнать легенду и создателей')
 ]
 bot.set_my_commands(command_list)
+bot.set_chat_menu_button(menu_button=types.MenuButtonCommands())
 
 @bot.message_handler(commands=['start', 'status', 'help'])
 def handle_start(message):
