@@ -8,3 +8,4 @@ resource = {
         'Деньги': 5000
     }
 }
+important_events = ['Начать игру', 'Да']

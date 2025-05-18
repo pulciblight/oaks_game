@@ -5,7 +5,7 @@ from states import start_states
 from m_states import states_m
 from f_states import states_f
 from clava import key_chooser
-from resources import resource
+from resources import resource, important_events
 
 API_TOKEN = '7842674848:AAHaZqKSI2gplCBCPo89O52YJXauRz3DuNU'
 bot = telebot.TeleBot(API_TOKEN)
@@ -52,7 +52,7 @@ def finally_game(message):
         bot.send_photo(user_id, scenario[text]['picture'],
                        caption=scenario[text]['text'],
                        reply_markup=key_chooser(scenario[text]['options']))
-    if text == 'Начать игру':
+    if text in important_events:
         users_data[user_id]['Выборы'].append(text)
 
 @bot.message_handler(func=lambda message: message.text in ['Женский', 'Мужской'])
