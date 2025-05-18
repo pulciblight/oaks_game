@@ -1,4 +1,5 @@
 import telebot
+import copy
 from telebot import types
 from states import start_states
 from m_states import states_m
@@ -20,23 +21,26 @@ bot.set_my_commands(command_list)
 bot.set_chat_menu_button(menu_button=types.MenuButtonCommands())
 @bot.message_handler(commands=['start', 'status', 'help'])
 def handle_commands(message):
-    user_id = message.from_user.id
+    user_id = message.chat.id
     if message.text == '/start':
-        users_data[user_id] = basic_resources
+        users_data[user_id] = copy.deepcopy(basic_resources)
         bot.send_message(user_id, scenario['start']['text'],
                         reply_markup=key_chooser(start_states['start']['options']))
     elif message.text == '/status':
-        current_status = []
-        for key in users_data[user_id]['Ресурсы']:
-            current_status.append(f'{key}: {users_data[user_id]['Ресурсы'][key]}')
-        current_status = '\n'.join(current_status)
-        bot.send_message(user_id, current_status)
+        if 'Начать игру' in users_data[user_id]['Выборы']:
+            current_status = []
+            for key in users_data[user_id]['Ресурсы']:
+                current_status.append(f'{key}: {users_data[user_id]['Ресурсы'][key]}')
+            current_status = '\n'.join(current_status)
+            bot.send_message(user_id, current_status)
+        else:
+            bot.send_message(user_id, 'Сначала начните игру!')
     elif message.text == '/help':
         bot.send_message(user_id, scenario['Узнать легенду']['text'])
 
 @bot.message_handler(func=lambda message: message.text in scenario.keys())
 def finally_game(message):
-    user_id = message.from_user.id
+    user_id = message.chat.id
     text = message.text
     if 'conseq' in scenario[text].keys():
         for key in scenario[text]['conseq']:
@@ -48,11 +52,13 @@ def finally_game(message):
         bot.send_photo(user_id, scenario[text]['picture'],
                        caption=scenario[text]['text'],
                        reply_markup=key_chooser(scenario[text]['options']))
+    if text == 'Начать игру':
+        users_data[user_id]['Выборы'].append(text)
 
 @bot.message_handler(func=lambda message: message.text in ['Женский', 'Мужской'])
 def sex_assignment(message):
     global scenario
-    user_id = message.from_user.id
+    user_id = message.chat.id
     text = message.text
     if text == 'Женский':
         users_data[user_id]['Пол'] = 'ж'
