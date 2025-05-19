@@ -1,11 +1,12 @@
 import telebot
 import copy
+import random
 from telebot import types
 from states import start_states
 from m_states import states_m
 from f_states import states_f
 from clava import key_chooser
-from resources import resource, important_events
+from resources import resource, important_events, day_ends
 
 API_TOKEN = '7842674848:AAHaZqKSI2gplCBCPo89O52YJXauRz3DuNU'
 bot = telebot.TeleBot(API_TOKEN)
@@ -42,6 +43,15 @@ def handle_commands(message):
 def finally_game(message):
     user_id = message.chat.id
     text = message.text
+    if text in day_ends:
+        current_status = []
+        for key in users_data[user_id]['Ресурсы']:
+            current_status.append(f'{key}: {users_data[user_id]['Ресурсы'][key]}')
+        current_status = '\n'.join(current_status)
+        index, tip = random.choice(list(users_data[user_id]['Советы'].items()))
+        scenario[text]['text'] += f'\n\n{current_status}\n\n<b>Совет:</b>\n{tip['text']}'
+        scenario[text]['picture'] = tip['picture']
+        del users_data[user_id]['Советы'][index]
     if 'conseq' in scenario[text].keys():
         for key in scenario[text]['conseq']:
             users_data[user_id]['Ресурсы'][key] += scenario[text]['conseq'][key]
@@ -54,6 +64,8 @@ def finally_game(message):
                        reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
     if text in important_events:
         users_data[user_id]['Выборы'].append(text)
+    if text == 'Начать заново':
+
 
 @bot.message_handler(func=lambda message: message.text in ['Женский', 'Мужской'])
 def sex_assignment(message):
