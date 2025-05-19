@@ -30,7 +30,7 @@ tips = {
                 'picture': 'https://github.com/pulciblight/stuff/blob/main/pics/gogogo.jpg?raw=true'
                 },
         '7': {
-                'text': '<i>Ни в коем случае не засыпайте в электричках, '
+                'text': '<i>Ни в коем случае не засыпайте в электричке, '
                         'конечная остановка которых не в Одинцово</i>',
                 'picture': 'https://github.com/pulciblight/stuff/blob/main/pics/dontsleep.jpg?raw=true'
                 },
@@ -50,7 +50,7 @@ resource = {
     },
         'Советы': tips
 }
-important_events = ['Начать игру', 'Да',
+important_events = ['Начать игру', 'Начать знаво', 'Да',
                     'Я хочу знать всё и вся!',
                     'Поучу часик-два, не больше!',
                     'Я и так достаточно грамотный!']

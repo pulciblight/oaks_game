@@ -28,7 +28,7 @@ def handle_commands(message):
         bot.send_message(user_id, scenario['start']['text'],
                         reply_markup=key_chooser(start_states['start']['options']))
     elif message.text == '/status':
-        if 'Начать игру' in users_data[user_id]['Выборы']:
+        if 'Начало' in users_data[user_id]['Выборы']:
             current_status = []
             for key in users_data[user_id]['Ресурсы']:
                 current_status.append(f'{key}: {users_data[user_id]['Ресурсы'][key]}')
@@ -43,27 +43,89 @@ def handle_commands(message):
 def finally_game(message):
     user_id = message.chat.id
     text = message.text
+    if users_data[user_id]['Ресурсы']['Жизни'] < 1:
+        bot.send_photo(user_id, scenario['Смерть']['picture'],
+                       caption=scenario['Смерть']['text'],
+                       reply_markup=key_chooser(scenario['Смерть']['options']), parse_mode="HTML")
+        if users_data[user_id]['Пол'] == 'ж':
+            users_data[user_id] = copy.deepcopy(basic_resources)
+            users_data[user_id]['Пол'] = 'ж'
+        else:
+            users_data[user_id] = copy.deepcopy(basic_resources)
+            users_data[user_id]['Пол'] = 'м'
+        users_data[user_id]['Выборы'].append('начало')
+        return
+    if users_data[user_id]['Ресурсы']['Репутация'] < -4:
+        bot.send_photo(user_id, scenario['Потеря репутации']['picture'],
+                       caption=scenario['Потеря репутации']['text'],
+                       reply_markup=key_chooser(scenario['Потеря репутации']['options']), parse_mode="HTML")
+        if users_data[user_id]['Пол'] == 'ж':
+            users_data[user_id] = copy.deepcopy(basic_resources)
+            users_data[user_id]['Пол'] = 'ж'
+        else:
+            users_data[user_id] = copy.deepcopy(basic_resources)
+            users_data[user_id]['Пол'] = 'м'
+        users_data[user_id]['Выборы'].append('начало')
+        return
+    if users_data[user_id]['Ресурсы']['Дисциплинарки'] == 3:
+        bot.send_photo(user_id, scenario['Дисциплине конец']['picture'],
+                       caption=scenario['Дисциплине конец']['text'],
+                       reply_markup=key_chooser(scenario['Дисциплине конец']['options']), parse_mode="HTML")
+        if users_data[user_id]['Пол'] == 'ж':
+            users_data[user_id] = copy.deepcopy(basic_resources)
+            users_data[user_id]['Пол'] = 'ж'
+        else:
+            users_data[user_id] = copy.deepcopy(basic_resources)
+            users_data[user_id]['Пол'] = 'м'
+        users_data[user_id]['Выборы'].append('начало')
+        return
     if text in day_ends:
         current_status = []
         for key in users_data[user_id]['Ресурсы']:
             current_status.append(f'{key}: {users_data[user_id]['Ресурсы'][key]}')
         current_status = '\n'.join(current_status)
         index, tip = random.choice(list(users_data[user_id]['Советы'].items()))
-        scenario[text]['text'] += f'\n\n{current_status}\n\n<b>Совет:</b>\n{tip['text']}'
+        scenario[text]['addtext'] = f'\n\n{current_status}\n\n<b>Совет:</b>\n{tip['text']}'
         scenario[text]['picture'] = tip['picture']
         del users_data[user_id]['Советы'][index]
+    if text == 'Начать второй день' and 'Экзамен' in users_data[user_id]['Выборы']:
+        scenario[text]['text'] = ('Доброе утро! Надо привести себя в приличный вид и подключать прокторинг для экзамена. '
+                                'Ты умываешься, достаешь из стиралки сырую, но чистую футболку и садишься за ноутбук. '
+                                'Экзамен начался. Удачи!')
+        scenario[text]['picture'] = 'https://raw.githubusercontent.com/pulciblight/stuff/refs/heads/main/pics/proctor.jpg'
+        scenario[text]['options'] = ['1 вопрос']
+    if text == 'Дорешать задания' and 'Дисциплинарка на экзе' in users_data[user_id]['Выборы']:
+        scenario[text]['text'] = ('Спустя какое-то время после начала экзамена '
+                                  'дверь в твою комнату резко открывается. Упс, твой сосед понял, '
+                                  'кто вчера с утра съел его бутерброд. Он начинает очень громко на тебя кричать. '
+                                  'Твой проктор посчитал это нарушением порядка проведения экзамена.'
+                                  '\n\nТы получаешь <b>1</b> дисциплинарку и теряешь <b>1</b> балл репутации')
+        scenario[text]['conseq'] = {'Дисциплинарки': 1, 'Репутация': -1}
+        scenario[text]['options'] = ['Надо заняться делами']
     if 'conseq' in scenario[text].keys():
         for key in scenario[text]['conseq']:
             users_data[user_id]['Ресурсы'][key] += scenario[text]['conseq'][key]
     if 'picture' not in scenario[text].keys():
         bot.send_message(user_id, scenario[text]['text'],
                          reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
+    elif 'addtext' in scenario[text].keys():
+        bot.send_photo(user_id, scenario[text]['picture'],
+                       caption=scenario[text]['text']+scenario[text]['addtext'],
+                       reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
     else:
         bot.send_photo(user_id, scenario[text]['picture'],
                        caption=scenario[text]['text'],
                        reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
     if text in important_events:
-        users_data[user_id]['Выборы'].append(text)
+        users_data[user_id]['Выборы'].append(scenario[text]['happened'])
+    if text == 'Начать заново':
+        if users_data[user_id]['Пол'] == 'ж':
+            users_data[user_id] = copy.deepcopy(basic_resources)
+            users_data[user_id]['Пол'] = 'ж'
+        else:
+            users_data[user_id] = copy.deepcopy(basic_resources)
+            users_data[user_id]['Пол'] = 'м'
+        users_data[user_id]['Выборы'].append('начало')
 
 @bot.message_handler(func=lambda message: message.text in ['Женский', 'Мужской'])
 def sex_assignment(message):
