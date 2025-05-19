@@ -28,7 +28,7 @@ def handle_commands(message):
         bot.send_message(user_id, scenario['start']['text'],
                         reply_markup=key_chooser(start_states['start']['options']))
     elif message.text == '/status':
-        if 'Начать игру' in users_data[user_id]['Выборы']:
+        if 'Начать игру' or 'Начать заново' in users_data[user_id]['Выборы']:
             current_status = []
             for key in users_data[user_id]['Ресурсы']:
                 current_status.append(f'{key}: {users_data[user_id]['Ресурсы'][key]}')
@@ -49,7 +49,7 @@ def finally_game(message):
             current_status.append(f'{key}: {users_data[user_id]['Ресурсы'][key]}')
         current_status = '\n'.join(current_status)
         index, tip = random.choice(list(users_data[user_id]['Советы'].items()))
-        scenario[text]['text'] += f'\n\n{current_status}\n\n<b>Совет:</b>\n{tip['text']}'
+        scenario[text]['addtext'] = f'\n\n{current_status}\n\n<b>Совет:</b>\n{tip['text']}'
         scenario[text]['picture'] = tip['picture']
         del users_data[user_id]['Советы'][index]
     if 'conseq' in scenario[text].keys():
@@ -58,6 +58,10 @@ def finally_game(message):
     if 'picture' not in scenario[text].keys():
         bot.send_message(user_id, scenario[text]['text'],
                          reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
+    elif 'addtext' in scenario[text].keys():
+        bot.send_photo(user_id, scenario[text]['picture'],
+                       caption=scenario[text]['text']+scenario[text]['addtext'],
+                       reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
     else:
         bot.send_photo(user_id, scenario[text]['picture'],
                        caption=scenario[text]['text'],
@@ -65,7 +69,13 @@ def finally_game(message):
     if text in important_events:
         users_data[user_id]['Выборы'].append(text)
     if text == 'Начать заново':
-
+        if users_data[user_id]['Пол'] == 'ж':
+            users_data[user_id] = copy.deepcopy(basic_resources)
+            users_data[user_id]['Пол'] = 'ж'
+        else:
+            users_data[user_id] = copy.deepcopy(basic_resources)
+            users_data[user_id]['Пол'] = 'м'
+        users_data[user_id]['Выборы'].append(text)
 
 @bot.message_handler(func=lambda message: message.text in ['Женский', 'Мужской'])
 def sex_assignment(message):
