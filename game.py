@@ -88,7 +88,7 @@ def finally_game(message):
         else:
             users_data[user_id] = copy.deepcopy(basic_resources)
             users_data[user_id]['Пол'] = 'м'
-        users_data[user_id]['Выборы'].append(text)
+        users_data[user_id]['Выборы'].append('начало')
 
 @bot.message_handler(func=lambda message: message.text in ['Женский', 'Мужской'])
 def sex_assignment(message):
