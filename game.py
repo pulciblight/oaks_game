@@ -28,7 +28,7 @@ def handle_commands(message):
         bot.send_message(user_id, scenario['start']['text'],
                         reply_markup=key_chooser(start_states['start']['options']))
     elif message.text == '/status':
-        if ('Начать игру' or 'Начать заново') in users_data[user_id]['Выборы']:
+        if 'начало' in users_data[user_id]['Выборы']:
             current_status = []
             for key in users_data[user_id]['Ресурсы']:
                 current_status.append(f'{key}: {users_data[user_id]['Ресурсы'][key]}')
@@ -52,6 +52,19 @@ def finally_game(message):
         scenario[text]['addtext'] = f'\n\n{current_status}\n\n<b>Совет:</b>\n{tip['text']}'
         scenario[text]['picture'] = tip['picture']
         del users_data[user_id]['Советы'][index]
+    if text == 'Начать второй день' and 'экзамен будет' in users_data[user_id]['Выборы']:
+        scenario[text]['text'] = ('Доброе утро! Надо привести себя в приличный вид и подключать прокторинг для экзамена. '
+                                'Ты умываешься, достаешь из стиралки сырую, но чистую футболку и садишься за ноутбук. '
+                                'Экзамен начался. Удачи!')
+        scenario[text]['picture'] = 'https://raw.githubusercontent.com/pulciblight/stuff/refs/heads/main/pics/proctor.jpg'
+        scenario[text]['options'] = ['1 вопрос']
+    if text == 'Дорешать задания' and 'сосед_ка в ярости' in users_data[user_id]['Выборы']:
+        scenario[text]['text'] = ('Спустя какое-то время после начала экзамена '
+                                  'дверь в твою комнату резко открывается. Упс, твой сосед понял, '
+                                  'кто вчера с утра съел его бутерброд. Он начинает очень громко на тебя кричать. '
+                                  'Твой проктор посчитал это нарушением порядка проведения экзамена.')
+        scenario[text]['conseq'] = {'Дисциплинарки': 1, 'Репутация': -1}
+        scenario[text]['options'] = ['Надо заняться делами']
     if 'conseq' in scenario[text].keys():
         for key in scenario[text]['conseq']:
             users_data[user_id]['Ресурсы'][key] += scenario[text]['conseq'][key]
@@ -67,7 +80,7 @@ def finally_game(message):
                        caption=scenario[text]['text'],
                        reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
     if text in important_events:
-        users_data[user_id]['Выборы'].append(text)
+        users_data[user_id]['Выборы'].append(scenario[text]['happened'])
     if text == 'Начать заново':
         if users_data[user_id]['Пол'] == 'ж':
             users_data[user_id] = copy.deepcopy(basic_resources)
