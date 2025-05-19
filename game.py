@@ -28,7 +28,7 @@ def handle_commands(message):
         bot.send_message(user_id, scenario['start']['text'],
                         reply_markup=key_chooser(start_states['start']['options']))
     elif message.text == '/status':
-        if 'Начать игру' or 'Начать заново' in users_data[user_id]['Выборы']:
+        if ('Начать игру' or 'Начать заново') in users_data[user_id]['Выборы']:
             current_status = []
             for key in users_data[user_id]['Ресурсы']:
                 current_status.append(f'{key}: {users_data[user_id]['Ресурсы'][key]}')
