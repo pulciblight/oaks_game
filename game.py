@@ -53,7 +53,7 @@ def finally_game(message):
         else:
             users_data[user_id] = copy.deepcopy(basic_resources)
             users_data[user_id]['Пол'] = 'м'
-        users_data[user_id]['Выборы'].append('начало')
+        users_data[user_id]['Выборы'].append('Начало')
         return
     if users_data[user_id]['Ресурсы']['Репутация'] < -4:
         bot.send_photo(user_id, scenario['Потеря репутации']['picture'],
@@ -65,7 +65,7 @@ def finally_game(message):
         else:
             users_data[user_id] = copy.deepcopy(basic_resources)
             users_data[user_id]['Пол'] = 'м'
-        users_data[user_id]['Выборы'].append('начало')
+        users_data[user_id]['Выборы'].append('Начало')
         return
     if users_data[user_id]['Ресурсы']['Дисциплинарки'] == 3:
         bot.send_photo(user_id, scenario['Дисциплине конец']['picture'],
@@ -77,7 +77,7 @@ def finally_game(message):
         else:
             users_data[user_id] = copy.deepcopy(basic_resources)
             users_data[user_id]['Пол'] = 'м'
-        users_data[user_id]['Выборы'].append('начало')
+        users_data[user_id]['Выборы'].append('Начало')
         return
     if text in day_ends:
         current_status = []
@@ -125,7 +125,7 @@ def finally_game(message):
         else:
             users_data[user_id] = copy.deepcopy(basic_resources)
             users_data[user_id]['Пол'] = 'м'
-        users_data[user_id]['Выборы'].append('начало')
+        users_data[user_id]['Выборы'].append('Начало')
 
 @bot.message_handler(func=lambda message: message.text in ['Женский', 'Мужской'])
 def sex_assignment(message):
