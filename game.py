@@ -32,7 +32,7 @@ def handle_commands(message):
             for key in users_data[user_id]['Ресурсы']:
                 current_status.append(f'{key}: {users_data[user_id]['Ресурсы'][key]}')
             current_status = '\n'.join(current_status)
-            bot.send_message(user_id, current_status)
+            bot.send_message(user_id, current_status, parse_mode="HTML")
         else:
             bot.send_message(user_id, 'Сначала начните игру!')
     elif message.text == '/help':
@@ -47,11 +47,11 @@ def finally_game(message):
             users_data[user_id]['Ресурсы'][key] += scenario[text]['conseq'][key]
     if 'picture' not in scenario[text].keys():
         bot.send_message(user_id, scenario[text]['text'],
-                         reply_markup=key_chooser(scenario[text]['options']))
+                         reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
     else:
         bot.send_photo(user_id, scenario[text]['picture'],
                        caption=scenario[text]['text'],
-                       reply_markup=key_chooser(scenario[text]['options']))
+                       reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
     if text in important_events:
         users_data[user_id]['Выборы'].append(text)
 
