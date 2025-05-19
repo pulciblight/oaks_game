@@ -43,6 +43,42 @@ def handle_commands(message):
 def finally_game(message):
     user_id = message.chat.id
     text = message.text
+    if users_data[user_id]['Ресурсы']['Жизни'] < 5:
+        bot.send_photo(user_id, scenario['Смерть']['picture'],
+                       caption=scenario['Смерть']['text'],
+                       reply_markup=key_chooser(scenario['Смерть']['options']), parse_mode="HTML")
+        if users_data[user_id]['Пол'] == 'ж':
+            users_data[user_id] = copy.deepcopy(basic_resources)
+            users_data[user_id]['Пол'] = 'ж'
+        else:
+            users_data[user_id] = copy.deepcopy(basic_resources)
+            users_data[user_id]['Пол'] = 'м'
+        users_data[user_id]['Выборы'].append('начало')
+        return
+    if users_data[user_id]['Ресурсы']['Репутация'] < 0:
+        bot.send_photo(user_id, scenario['Потеря репутации']['picture'],
+                       caption=scenario['Потеря репутации']['text'],
+                       reply_markup=key_chooser(scenario['Потеря репутации']['options']), parse_mode="HTML")
+        if users_data[user_id]['Пол'] == 'ж':
+            users_data[user_id] = copy.deepcopy(basic_resources)
+            users_data[user_id]['Пол'] = 'ж'
+        else:
+            users_data[user_id] = copy.deepcopy(basic_resources)
+            users_data[user_id]['Пол'] = 'м'
+        users_data[user_id]['Выборы'].append('начало')
+        return
+    if users_data[user_id]['Ресурсы']['Дисциплинарки'] == 1:
+        bot.send_photo(user_id, scenario['Дисциплине конец']['picture'],
+                       caption=scenario['Дисциплине конец']['text'],
+                       reply_markup=key_chooser(scenario['Дисциплине конец']['options']), parse_mode="HTML")
+        if users_data[user_id]['Пол'] == 'ж':
+            users_data[user_id] = copy.deepcopy(basic_resources)
+            users_data[user_id]['Пол'] = 'ж'
+        else:
+            users_data[user_id] = copy.deepcopy(basic_resources)
+            users_data[user_id]['Пол'] = 'м'
+        users_data[user_id]['Выборы'].append('начало')
+        return
     if text in day_ends:
         current_status = []
         for key in users_data[user_id]['Ресурсы']:
@@ -62,7 +98,8 @@ def finally_game(message):
         scenario[text]['text'] = ('Спустя какое-то время после начала экзамена '
                                   'дверь в твою комнату резко открывается. Упс, твой сосед понял, '
                                   'кто вчера с утра съел его бутерброд. Он начинает очень громко на тебя кричать. '
-                                  'Твой проктор посчитал это нарушением порядка проведения экзамена.')
+                                  'Твой проктор посчитал это нарушением порядка проведения экзамена.'
+                                  '\n\nТы получаешь 1 дисциплинарку и теряешь 1 балл репутации')
         scenario[text]['conseq'] = {'Дисциплинарки': 1, 'Репутация': -1}
         scenario[text]['options'] = ['Надо заняться делами']
     if 'conseq' in scenario[text].keys():
