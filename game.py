@@ -55,18 +55,6 @@ def finally_game(message):
             users_data[user_id]['Пол'] = 'м'
         users_data[user_id]['Выборы'].append('Начало')
         return
-    if users_data[user_id]['Ресурсы']['Репутация'] < -4:
-        bot.send_photo(user_id, scenario['Потеря репутации']['picture'],
-                       caption=scenario['Потеря репутации']['text'],
-                       reply_markup=key_chooser(scenario['Потеря репутации']['options']), parse_mode="HTML")
-        if users_data[user_id]['Пол'] == 'ж':
-            users_data[user_id] = copy.deepcopy(basic_resources)
-            users_data[user_id]['Пол'] = 'ж'
-        else:
-            users_data[user_id] = copy.deepcopy(basic_resources)
-            users_data[user_id]['Пол'] = 'м'
-        users_data[user_id]['Выборы'].append('Начало')
-        return
     if users_data[user_id]['Ресурсы']['Дисциплинарки'] == 3:
         bot.send_photo(user_id, scenario['Дисциплине конец']['picture'],
                        caption=scenario['Дисциплине конец']['text'],
@@ -99,9 +87,27 @@ def finally_game(message):
                                   'дверь в твою комнату резко открывается. Упс, твой сосед понял, '
                                   'кто вчера с утра съел его бутерброд. Он начинает очень громко на тебя кричать. '
                                   'Твой проктор посчитал это нарушением порядка проведения экзамена.'
-                                  '\n\nТы получаешь <b>1</b> дисциплинарку и теряешь <b>1</b> балл репутации')
+                                  '\n\nТы получил <b>1</b> дисциплинарку и потерял <b>1 балл</b> репутации')
         scenario[text]['conseq'] = {'Дисциплинарки': 1, 'Репутация': -1}
         scenario[text]['options'] = ['Надо заняться делами']
+    if text == 'Конечно хочу!' and 'Не ответил на вопрос' in users_data[user_id]['Выборы']:
+        scenario[text]['text'] = 'Ты соглашаешься. Вечер будет весёлый!'
+        scenario[text]['happened'] = 'Приехал любимый зять будем пить пииво'
+        scenario[text]['options'] = ['Закончить пару']
+        del scenario[text]['conseq']
+    if text == 'Продолжить развлечения' and users_data[user_id]['Ресурсы']['Репутация'] > -3:
+        scenario[text]['text'] = ('Тебе пришло сообщение от соседа: '
+                                  '«Можно потише, вас очень хорошо слышно в соседних комнатах! '
+                                  'У меня уже голова болит от вашего ора». Пришлось стать тише.')
+        scenario[text]['options'] = ['Надо придумать, чем заняться вечером.']
+    if text == 'Пойти на стадион' and users_data[user_id]['Ресурсы']['Жизни'] < 3:
+        scenario[text]['text'] = ('Ты зашёл на стадион. Ты не знал, что перед бегом нужно размяться, '
+                                  'и побежал сразу. На середине круга у тебя что-то защемило в ноге '
+                                  'и ты упал прямо перед группой подростков. Раздался неприятный смех. '
+                                  'Кажется, тебя засмеяли местные дети, но тем не менее ты размялся!'
+                                  '\n\nТы заработал <b>1</b> жизнь')
+        scenario[text]['options'] = ['Вернуться домой']
+        scenario[text]['conseq'] = {'Жизни': +1}
     if 'conseq' in scenario[text].keys():
         for key in scenario[text]['conseq']:
             users_data[user_id]['Ресурсы'][key] += scenario[text]['conseq'][key]
