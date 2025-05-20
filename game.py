@@ -6,7 +6,7 @@ from states import start_states
 from m_states import states_m
 from f_states import states_f
 from clava import key_chooser
-from resources import resource, important_events, day_ends
+from resources import resource, day_ends
 
 API_TOKEN = '7842674848:AAHaZqKSI2gplCBCPo89O52YJXauRz3DuNU'
 bot = telebot.TeleBot(API_TOKEN)
@@ -94,7 +94,7 @@ def finally_game(message):
                                 'Экзамен начался. Удачи!')
         scenario[text]['picture'] = 'https://raw.githubusercontent.com/pulciblight/stuff/refs/heads/main/pics/proctor.jpg'
         scenario[text]['options'] = ['1 вопрос']
-    if text == 'Дорешать задания' and 'Дисциплинарка на экзе' in users_data[user_id]['Выборы']:
+    if text == 'Далее' and 'Дисциплинарка на экзе' in users_data[user_id]['Выборы']:
         scenario[text]['text'] = ('Спустя какое-то время после начала экзамена '
                                   'дверь в твою комнату резко открывается. Упс, твой сосед понял, '
                                   'кто вчера с утра съел его бутерброд. Он начинает очень громко на тебя кричать. '
@@ -116,7 +116,7 @@ def finally_game(message):
         bot.send_photo(user_id, scenario[text]['picture'],
                        caption=scenario[text]['text'],
                        reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
-    if text in important_events:
+    if 'happened' in scenario[text].keys():
         users_data[user_id]['Выборы'].append(scenario[text]['happened'])
     if text == 'Начать заново':
         if users_data[user_id]['Пол'] == 'ж':
