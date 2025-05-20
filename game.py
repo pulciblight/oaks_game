@@ -5,7 +5,7 @@ from telebot import types
 from states import start_states
 from m_states import states_m
 from f_states import states_f
-from clava import key_chooser
+from clava import key_chooser, alternate_scenario
 from resources import resource, day_ends
 
 API_TOKEN = '7842674848:AAHaZqKSI2gplCBCPo89O52YJXauRz3DuNU'
@@ -76,57 +76,9 @@ def finally_game(message):
         scenario[text]['addtext'] = f'\n\n{current_status}\n\n<b>Совет:</b>\n{tip['text']}'
         scenario[text]['picture'] = tip['picture']
         del users_data[user_id]['Советы'][index]
-    if text == 'Начать второй день' and 'Экзамен' in users_data[user_id]['Выборы']:
-        scenario[text]['text'] = ('Доброе утро! Надо привести себя в приличный вид и подключать прокторинг для экзамена. '
-                                    'Ты умываешься, достаешь из стиралки сырую, но чистую футболку и садишься за ноутбук. '
-                                    'Экзамен начался. Удачи!')
-        scenario[text]['picture'] = 'https://raw.githubusercontent.com/pulciblight/stuff/refs/heads/main/pics/proctor.jpg'
-        scenario[text]['options'] = ['1 вопрос']
-    if text == 'Далее' and 'Дисциплинарка на экзе' in users_data[user_id]['Выборы']:
-        if users_data[user_id]['Пол'] == 'м':
-            scenario[text]['text'] = ('Спустя какое-то время после начала экзамена '
-                                      'дверь в твою комнату резко открывается. Упс, твой сосед понял, '
-                                      'кто вчера с утра съел его бутерброд. Он начинает очень громко на тебя кричать. '
-                                      'Твой проктор посчитал это нарушением порядка проведения экзамена.'
-                                      '\n\nТы получил <b>1</b> дисциплинарку и потерял <b>1 балл</b> репутации')
-        else:
-            scenario[text]['text'] = ('Спустя какое-то время после начала экзамена '
-                                      'дверь в твою комнату резко открывается. Упс, твоя соседка поняла, '
-                                      'кто вчера с утра съел ее бутерброд. Она начинает очень громко на тебя кричать. '
-                                      'Твой проктор посчитал это нарушением порядка проведения экзамена.'
-                                      '\n\nТы получила <b>1</b> дисциплинарку и потеряла <b>1 балл</b> репутации')
-        scenario[text]['conseq'] = {'Дисциплинарки': 1, 'Репутация': -1}
-        scenario[text]['options'] = ['Надо заняться делами']
-    if text == 'Конечно хочу!' and 'Не ответил на вопрос' in users_data[user_id]['Выборы']:
-        scenario[text]['text'] = 'Ты соглашаешься. Вечер будет весёлый!'
-        scenario[text]['happened'] = 'Приехал любимый зять будем пить пииво'
-        scenario[text]['options'] = ['Закончить пару']
-        del scenario[text]['conseq']
-    if text == 'Продолжить развлечения' and users_data[user_id]['Ресурсы']['Репутация'] > -3:
-        if users_data[user_id]['Пол'] == 'м':
-            scenario[text]['text'] = ('Тебе пришло сообщение от соседа: '
-                                      '«Можно потише, вас очень хорошо слышно в соседних комнатах! '
-                                      'У меня уже голова болит от вашего ора». Пришлось стать тише.')
-        else:
-            scenario[text]['text'] = ('Тебе пришло сообщение от соседки: '
-                                      '«Можно потише, вас очень хорошо слышно в соседних комнатах! '
-                                      'У меня уже голова болит от вашего ора». Пришлось стать тише.')
-        scenario[text]['options'] = ['Надо придумать, чем заняться вечером.']
-    if text == 'Пойти на стадион' and users_data[user_id]['Ресурсы']['Жизни'] < 3:
-        if users_data[user_id]['Пол'] == 'м':
-            scenario[text]['text'] = ('Ты зашёл на стадион. Ты не знал, что перед бегом нужно размяться, '
-                                      'и побежал сразу. На середине круга у тебя что-то защемило в ноге '
-                                      'и ты упал прямо перед группой подростков. Раздался неприятный смех. '
-                                      'Кажется, тебя засмеяли местные дети, но тем не менее ты размялся!'
-                                      '\n\nТы заработал <b>1</b> жизнь')
-        else:
-            scenario[text]['text'] = ('Ты зашла на стадион. Ты не знала, что перед бегом нужно размяться, '
-                                      'и побежала сразу. На середине круга у тебя что-то защемило в ноге '
-                                      'и ты упала прямо перед группой подростков. Раздался неприятный смех. '
-                                      'Кажется, тебя засмеяли местные дети, но тем не менее ты размялась!'
-                                      '\n\nТы заработала <b>1</b> жизнь')
-        scenario[text]['options'] = ['Вернуться домой']
-        scenario[text]['conseq'] = {'Жизни': +1}
+    alternate_scenario(scenario[text], text, users_data[user_id]['Выборы'], users_data[user_id]['Пол'],
+                       users_data[user_id]['Ресурсы']['Жизни'], users_data[user_id]['Ресурсы']['Репутация'],
+                       users_data[user_id]['Ресурсы']['Дисциплинарки'])
     if 'conseq' in scenario[text].keys():
         for key in scenario[text]['conseq']:
             users_data[user_id]['Ресурсы'][key] += scenario[text]['conseq'][key]
