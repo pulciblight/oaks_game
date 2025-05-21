@@ -93,9 +93,14 @@ def finally_game(message):
                        caption=scenario[text]['text']+scenario[text]['addtext'],
                        reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
     else:
-        bot.send_photo(user_id, scenario[text]['picture'],
-                       caption=scenario[text]['text'],
-                       reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
+        if scenario[text]['picture'] == 'https://github.com/pulciblight/stuff/blob/main/pics/shokschedule.jpg?raw=true':
+            bot.send_photo(user_id, scenario[text]['picture'],
+                           caption=scenario[text]['text'], has_spoiler=True,
+                           reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
+        else:
+            bot.send_photo(user_id, scenario[text]['picture'],
+                           caption=scenario[text]['text'],
+                           reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
     if 'happened' in scenario[text].keys():
         users_data[user_id]['Выборы'].append(scenario[text]['happened'])
     if text == 'Начать заново':
