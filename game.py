@@ -6,7 +6,7 @@ from states import start_states
 from m_states import states_m
 from f_states import states_f
 from clava import key_chooser, alternate_scenario
-from resources import resource, day_ends
+from resources import resource, day_ends, tips
 
 API_TOKEN = '7842674848:AAHaZqKSI2gplCBCPo89O52YJXauRz3DuNU'
 bot = telebot.TeleBot(API_TOKEN)
@@ -72,6 +72,8 @@ def finally_game(message):
         for key in users_data[user_id]['Ресурсы']:
             current_status.append(f'{key}: {users_data[user_id]['Ресурсы'][key]}')
         current_status = '\n'.join(current_status)
+        if not bool(users_data[user_id]['Советы']):
+            users_data[user_id]['Советы'] = tips.copy()
         index, tip = random.choice(list(users_data[user_id]['Советы'].items()))
         scenario[text]['addtext'] = f'\n\n{current_status}\n\n<b>Совет:</b>\n{tip['text']}'
         scenario[text]['picture'] = tip['picture']
