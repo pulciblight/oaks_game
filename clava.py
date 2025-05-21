@@ -7,7 +7,7 @@ def key_chooser(options):
     return keyboard
 
 def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, player_rep, player_disc):
-    if checkpoint == 'Начать второй день' and 'Экзамен' in choices:
+    if checkpoint == 'Начать второй день' and ('Экзамен' in choices and 'Проспал' not in choices):
         play['text'] = ('Доброе утро! Надо привести себя в приличный вид и подключать прокторинг для экзамена. '
                                     'Ты умываешься, достаешь из стиралки сырую, но чистую футболку и садишься за ноутбук. '
                                     'Экзамен начался. Удачи!')
@@ -43,6 +43,7 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
                                       '«Можно потише, вас очень хорошо слышно в соседних комнатах! '
                                       'У меня уже голова болит от вашего ора». Пришлось стать тише.')
         play['options'] = ['Надо придумать, чем заняться вечером.']
+        del play['conseq']
     if checkpoint == 'Пойти на стадион' and player_lives < 3:
         if player_sex == 'м':
             play['text'] = ('Ты зашёл на стадион. Ты не знал, что перед бегом нужно размяться, '
@@ -58,3 +59,17 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
                                       '\n\nТы заработала <b>1</b> жизнь')
         play['options'] = ['Вернуться домой']
         play['conseq'] = {'Жизни': +1}
+    if checkpoint == 'Попросить деньги у родителей' and ('Проспал' in choices or player_disc > 0):
+        if 'Проспал' in choices and player_disc == 0:
+            if player_sex == 'м':
+                play['text'] = ('Родители узнали о том, что ты попал на пересдачу, и отказались давать тебе деньги. '
+                                'Придется искать другой способ оплатить долг.')
+            else:
+                play['text'] = ('Родители узнали о том, что ты попала на пересдачу, и отказались давать тебе деньги. '
+                                'Придется искать другой способ оплатить долг.')
+        elif player_disc > 0 and 'Экзамен' in choices:
+            play['text'] = 'Не стоило получать дисиплинарки... Твои родители не дали тебе денег.'
+        elif 'Проспал' in choices and player_disc > 0:
+            play['text'] = ('"Пересдача и дисциплинарка? Денег от нас не дождешься", — таким был ответ.'
+                                'Что будешь делать?')
+        play['options'] = ['Взять в долг у друга', 'Оплатить самостоятельно', 'Попросить отсрочить оплату']
