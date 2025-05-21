@@ -129,7 +129,7 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
         play['options'] = ['Убраться одному', 'Заставить соседа убираться с тобой',
                            'Просто сделать вид, что ничего не знаешь про уборку']
         del play['conseq']
-    if checkpoint == 'Заставить соседа убираться с тобой' and player_rep < -3:
+    if checkpoint == 'Заставить соседа убираться с тобой' and player_rep < -2:
         if player_sex == 'м':
             play['text'] = ('После долгих уговоров и упоминания всего хорошего, '
                             'что ты делал для своего соседа, он посмеялся и отказался.')
