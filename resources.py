@@ -38,6 +38,10 @@ tips = {
                 'text': '<i>Не смотрите водителю дубовозки в глаза</i>',
                 'picture': 'https://github.com/pulciblight/stuff/blob/main/pics/eyes.jpg?raw=true'
                 },
+        '9': {
+                'text': '<i>В 23:00 общежитие становится опасным для гостей Дубков</i>',
+                'picture': 'https://github.com/pulciblight/stuff/blob/main/pics/angel2.jpg?raw=true'
+                },
 }
 resource = {
         'Пол': '',
