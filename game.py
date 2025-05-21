@@ -78,7 +78,8 @@ def finally_game(message):
         del users_data[user_id]['Советы'][index]
     alternate_scenario(scenario[text], text, users_data[user_id]['Выборы'], users_data[user_id]['Пол'],
                        users_data[user_id]['Ресурсы']['Жизни'], users_data[user_id]['Ресурсы']['Репутация'],
-                       users_data[user_id]['Ресурсы']['Дисциплинарки'])
+                       users_data[user_id]['Ресурсы']['Дисциплинарки'],
+                       users_data[user_id]['Ресурсы']['Деньги'])
     if 'conseq' in scenario[text].keys():
         for key in scenario[text]['conseq']:
             users_data[user_id]['Ресурсы'][key] += scenario[text]['conseq'][key]

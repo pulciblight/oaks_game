@@ -6,7 +6,7 @@ def key_chooser(options):
         keyboard.add(types.KeyboardButton(option))
     return keyboard
 
-def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, player_rep, player_disc):
+def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, player_rep, player_disc, player_money):
     if checkpoint == 'Начать второй день' and ('Экзамен' in choices and 'Проспал' not in choices):
         play['text'] = ('Доброе утро! Надо привести себя в приличный вид и подключать прокторинг для экзамена. '
                                     'Ты умываешься, достаешь из стиралки сырую, но чистую футболку и садишься за ноутбук. '
@@ -43,7 +43,7 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
                                       '«Можно потише, вас очень хорошо слышно в соседних комнатах! '
                                       'У меня уже голова болит от вашего ора». Пришлось стать тише.')
         play['options'] = ['Надо придумать, чем заняться вечером.']
-        del play['conseq']
+        del play['happened']
     if checkpoint == 'Пойти на стадион' and player_lives < 3:
         if player_sex == 'м':
             play['text'] = ('Ты зашёл на стадион. Ты не знал, что перед бегом нужно размяться, '
@@ -71,5 +71,20 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
             play['text'] = 'Не стоило получать дисиплинарки... Твои родители не дали тебе денег.'
         elif 'Проспал' in choices and player_disc > 0:
             play['text'] = ('"Пересдача и дисциплинарка? Денег от нас не дождешься", — таким был ответ.'
-                                'Что будешь делать?')
+                                ' Что будешь делать?')
         play['options'] = ['Взять в долг у друга', 'Оплатить самостоятельно', 'Попросить отсрочить оплату']
+    if checkpoint == 'Взять в долг у друга' and 'Алкоголики' not in choices:
+        if player_sex == 'м':
+            play['text'] = ('Тебе повезло, и твой друг согласился одолжить тебе деньги. '
+                            'Но помни: долг нужно будет вернуть!\n\nТы заработал <b>1500</b> рублей')
+        else:
+            play['text'] = ('Тебе повезло, и твой друг согласился одолжить тебе деньги. '
+                            'Но помни: долг нужно будет вернуть!\n\nТы заработала <b>1500</b> рублей')
+        play['options'] = ['Оплатить самостоятельно']
+        play['conseq'] = {'Деньги': 1500}
+        play['happened'] = 'Долг'
+    if checkpoint == 'Оплатить самостоятельно' and player_money < 3400:
+        play['text'] = 'К сожалению, тебе не хватает денег. Придется придумать, где их взять, либо отсрочить оплату.'
+        play['options'] = ['Попросить деньги у родителей', 'Взять в долг у друга', 'Попросить отсрочить оплату']
+
+
