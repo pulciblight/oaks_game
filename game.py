@@ -104,8 +104,8 @@ def finally_game(message):
     if 'picture' not in users_data[user_id]['scene'][text].keys():
         if 'options' not in users_data[user_id]['scene'][text].keys():
             bot.send_message(user_id, users_data[user_id]['scene'][text]['text'], parse_mode="HTML")
-        else:
-            bot.send_message(user_id, users_data[user_id]['scene'][text]['text'],
+        elif 'addtext' in users_data[user_id]['scene'][text].keys():
+            bot.send_message(user_id, users_data[user_id]['scene'][text]['text']+users_data[user_id]['scene'][text]['addtext'],
                              reply_markup=key_chooser(users_data[user_id]['scene'][text]['options']), parse_mode="HTML")
     elif 'addtext' in users_data[user_id]['scene'][text].keys():
         bot.send_photo(user_id, users_data[user_id]['scene'][text]['picture'],

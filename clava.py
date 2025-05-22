@@ -1,7 +1,10 @@
 from telebot import types
 
 def key_chooser(options):
-    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    if options == ['Начать заново', 'Закончить игру']:
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    else:
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     for option in options:
         keyboard.add(types.KeyboardButton(option))
     return keyboard
