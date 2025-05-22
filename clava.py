@@ -292,7 +292,7 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
                 'И деньги свои себе оставь!\n\nТы теряешь <b>3 балла</b> репутации.')
         if 'conseq' not in play.keys():
             play['conseq'] = {'Репутация': -3}
-        elif play['conseq']['Репутация'] == -1:
+        elif 'Репутация' in play['conseq'].keys():
             play['conseq'] = {'Репутация': -4}
         else:
             play['conseq'] = {'Репутация': -3, 'Дисциплинарки': 1}
