@@ -149,7 +149,7 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
         play['options'] = ['Напишу самостоятельно', 'Закинуть промпт в chatGPT',
                            'Не сдавать работу']
         del play['conseq']
-    if checkpoint == 'Продолжить день' and 'Долг' in choices or 'Долг в Вышке' in choices:
+    if checkpoint == 'Продолжить день' and ('Долг' in choices or 'Долг в Вышке' in choices):
         if 'Долг' in choices:
             play['text'] = ('Дедлайн прошел, а впереди, оказывается, ещё целый свободный день без поездки в Вышку. '
                             'Времени хватит на три больших дела. Сначала стоит разобраться с едой.'
@@ -159,7 +159,7 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
                             'Времени хватит на три больших дела. Сначала стоит разобраться с едой.'
                             '\n\nНе забывай про свой долг по оплате общаги!')
         play['options'] = ['Приготовить поесть']
-    if checkpoint == 'Пора готовиться ко сну' and 'Долг' in choices or 'Долг в Вышке' in choices:
+    if checkpoint == 'Пора готовиться ко сну' and ('Долг' in choices or 'Долг в Вышке' in choices):
         if 'Долг' in choices:
             if player_sex == 'м':
                 play['text'] = ('Ты, может, и хотел бы сделать что-то ещё, но день, к сожалению, не резиновый. '
@@ -174,12 +174,12 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
             if player_sex == 'м':
                 play['text'] = ('Ты, может, и хотел бы сделать что-то ещё, но день, к сожалению, не резиновый. '
                                 'На часах уже 11 вечера. Ты начал готовиться ко сну. '
-                                'Вдруг раздался ужасающий звонок в дверь.'
+                                'Вдруг раздался ужасающий звонок в дверь. '
                                 'Это дежурка пришла напомнить про оплату общаги!')
             else:
                 play['text'] = ('Ты, может, и хотела бы сделать что-то ещё, но день, к сожалению, не резиновый. '
                                 'На часах уже 11 вечера. Ты начала готовиться ко сну. '
-                                'Вдруг раздался ужасающий звонок в дверь.'
+                                'Вдруг раздался ужасающий звонок в дверь. '
                                 'Это дежурка пришла напомнить про оплату общаги!')
             play['options'] = ['Оплатить', 'Попросить отложить еще ненадолго']
             play['picture'] = 'https://github.com/pulciblight/stuff/blob/main/pics/dolgen.jpg?raw=true'
