@@ -195,7 +195,7 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
             play['text'] = 'К сожалению, тебе не хватит денег на сегодня, если ты сейчас оплатишь общагу.'
         elif player_money < 3400:
             play['text'] = 'К сожалению, тебе не хватает денег.'
-        play['options'] = ['Попросить отложить еще ненадолго']
+        play['options'] = ['Попросить отложить ещё ненадолго']
         del play['conseq']
     if checkpoint == 'В досуговую!' and 'Должник' in choices:
         play['text'] = ('Пока вы идёте до досуговой, ты открываешь телефон и видишь сообщение '
