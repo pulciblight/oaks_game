@@ -93,7 +93,7 @@ def finally_game(message):
         users_data[user_id]['scene'][text]['addtext'] = f'\n\n{current_status}\n\n<b>Совет:</b>\n{tip['text']}'
         users_data[user_id]['scene'][text]['picture'] = tip['picture']
         del users_data[user_id]['Советы'][index]
-    alternate_scenario(users_data[user_id]['scene'][text], text, users_data[user_id]['Выборы'],
+    alternate_scenario(users_data[user_id]['scene'][text], users_data[user_id]['scene'], text, users_data[user_id]['Выборы'],
                        users_data[user_id]['Пол'], users_data[user_id]['Ресурсы']['Жизни'],
                        users_data[user_id]['Ресурсы']['Репутация'],
                        users_data[user_id]['Ресурсы']['Дисциплинарки'],
@@ -102,8 +102,11 @@ def finally_game(message):
         for key in users_data[user_id]['scene'][text]['conseq']:
             users_data[user_id]['Ресурсы'][key] += users_data[user_id]['scene'][text]['conseq'][key]
     if 'picture' not in users_data[user_id]['scene'][text].keys():
-        bot.send_message(user_id, users_data[user_id]['scene'][text]['text'],
-                         reply_markup=key_chooser(users_data[user_id]['scene'][text]['options']), parse_mode="HTML")
+        if 'options' not in users_data[user_id]['scene'][text].keys():
+            bot.send_message(user_id, users_data[user_id]['scene'][text]['text'], parse_mode="HTML")
+        else:
+            bot.send_message(user_id, users_data[user_id]['scene'][text]['text'],
+                             reply_markup=key_chooser(users_data[user_id]['scene'][text]['options']), parse_mode="HTML")
     elif 'addtext' in users_data[user_id]['scene'][text].keys():
         bot.send_photo(user_id, users_data[user_id]['scene'][text]['picture'],
                        caption=users_data[user_id]['scene'][text]['text']+users_data[user_id]['scene'][text]['addtext'],

@@ -6,7 +6,7 @@ def key_chooser(options):
         keyboard.add(types.KeyboardButton(option))
     return keyboard
 
-def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, player_rep, player_disc, player_money):
+def alternate_scenario(play, scenario, checkpoint, choices, player_sex, player_lives, player_rep, player_disc, player_money):
     if checkpoint == 'Начать второй день' and ('Экзамен' in choices and 'Проспал' not in choices):
         play['text'] = ('Доброе утро! Надо привести себя в приличный вид и подключать прокторинг для экзамена. '
                         'Ты умываешься, достаешь из стиралки сырую, '
@@ -257,5 +257,36 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
                             'Дедлайн продлевается с понижением оценки».\n\nТы теряешь <b>1 балл</b> репутации.')
         play['options'] = ['Надо расходиться']
         play['conseq'] = {'Репутация': -1}
+    if checkpoint == 'Пойти к другу' and 'Игнорщик' in choices:
+        if player_sex == 'м':
+            play['addtext'] = ('\n\nВдруг тебе приходит сообщение от друга: «Ты вообще офигел? Можешь мне больше не писать. '
+                               'И деньги свои себе оставь!\n\nТы теряешь <b>3 балла</b> репутации.')
+        else:
+            play['addtext'] = (
+                '\n\nВдруг тебе приходит сообщение от друга: «Ты вообще офигела? Можешь мне больше не писать. '
+                'И деньги свои себе оставь!\n\nТы теряешь <b>3 балла</b> репутации.')
+        if 'conseq' not in play.keys():
+            play['conseq'] = {'Репутация': -3}
+        elif play['conseq']['Репутация'] == -1:
+            play['conseq'] = {'Репутация': -4}
+        else:
+            play['conseq'] = {'Репутация': -3, 'Дисциплинарки': 1}
+    if checkpoint == 'Закончить пятый день':
+        if 'Трижды должник' in choices:
+            play['text'] = scenario['Деньги давайте, бумажные']['text']
+            play['options'] = scenario['Деньги давайте, бумажные']['options']
+            play['picture'] = scenario['Деньги давайте, бумажные']['picture']
+        elif player_money >= 1000 and player_rep > -2 and player_disc == 0 and player_lives > 2:
+            play['text'] = scenario['Трилист']['text']
+            play['options'] = scenario['Трилист']['options']
+            play['picture'] = scenario['Трилист']['picture']
+        elif player_rep < -5:
+            play['text'] = scenario['Потеря репутации']['text']
+            play['options'] = scenario['Потеря репутации']['options']
+            play['picture'] = scenario['Потеря репутации']['picture']
+        else:
+            play['text'] = scenario['Не удалось покинуть Дубки']['text']
+            play['options'] = scenario['Не удалось покинуть Дубки']['options']
+            play['picture'] = scenario['Не удалось покинуть Дубки']['picture']
 
 
