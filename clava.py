@@ -215,8 +215,8 @@ def alternate_scenario(play, scenario, checkpoint, choices, player_sex, player_l
         play['text'] = 'К сожалению, тебе все еще не хватает денег.'
         play['options'] = ['Пообещать, что оплатишь в ближайшее время']
         del play['conseq']
-    if checkpoint == 'Закончить игру в бункер' and (('П1' and 'П2' or 'П3' and 'П2') in choices or 'П1' and 'П3'
-                                                    in choices):
+    if checkpoint == 'Закончить игру в бункер' and ('П1' and 'П2' in choices or 'П3' and 'П2'
+                                                    in choices or 'П1' and 'П3' in choices):
        if player_sex == 'м':
             play['text'] = ('Поздравляем! Тебе удалось выжить. Ты не только прекрасно провел время, '
                             'но и поднялся в глазах товарищей-дубчан.\n\n'
