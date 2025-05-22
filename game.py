@@ -15,7 +15,7 @@ basic_resources = resource
 original_scene = copy.deepcopy(start_states)
 original_scene_f = copy.deepcopy(states_f)
 original_scene_m = copy.deepcopy(states_m)
-scenario = start_states.copy()
+scenario = copy.deepcopy(start_states)
 command_list = [
     types.BotCommand('start', 'Начать новую игру'),
     types.BotCommand('status', 'Посмотреть текущее состояние персонажа'),
@@ -29,9 +29,10 @@ def handle_commands(message):
     user_id = message.chat.id
     if message.text == '/start':
         users_data[user_id] = copy.deepcopy(basic_resources)
+        users_data[user_id]['scene'] = copy.deepcopy(original_scene)
         scenario = copy.deepcopy(original_scene)
         bot.send_message(user_id, scenario['start']['text'],
-                        reply_markup=key_chooser(start_states['start']['options']))
+                        reply_markup=key_chooser(scenario['start']['options']))
     elif message.text == '/status':
         if user_id not in users_data or 'Начало' not in users_data[user_id]['Выборы']:
             bot.send_message(user_id, 'Сначала начните игру!')
@@ -53,12 +54,15 @@ def finally_game(message):
         bot.send_photo(user_id, scenario['Смерть']['picture'],
                        caption=scenario['Смерть']['text'],
                        reply_markup=key_chooser(scenario['Смерть']['options']), parse_mode="HTML")
-        users_data[user_id] = copy.deepcopy(basic_resources)
         if users_data[user_id]['Пол'] == 'ж':
-            scenario.update(original_scene_f)
+            scenario.update(copy.deepcopy(original_scene_f))
+            users_data[user_id]['scene'].update(copy.deepcopy(original_scene_f))
+            users_data[user_id] = copy.deepcopy(basic_resources)
             users_data[user_id]['Пол'] = 'ж'
         else:
-            scenario.update(original_scene_m)
+            scenario.update(copy.deepcopy(original_scene_m))
+            users_data[user_id]['scene'].update(copy.deepcopy(original_scene_m))
+            users_data[user_id] = copy.deepcopy(basic_resources)
             users_data[user_id]['Пол'] = 'м'
         users_data[user_id]['Выборы'].append('Начало')
         return
@@ -66,12 +70,15 @@ def finally_game(message):
         bot.send_photo(user_id, scenario['Дисциплине конец']['picture'],
                        caption=scenario['Дисциплине конец']['text'],
                        reply_markup=key_chooser(scenario['Дисциплине конец']['options']), parse_mode="HTML")
-        users_data[user_id] = copy.deepcopy(basic_resources)
         if users_data[user_id]['Пол'] == 'ж':
-            scenario.update(original_scene_f)
+            scenario.update(copy.deepcopy(original_scene_f))
+            users_data[user_id]['scene'].update(copy.deepcopy(original_scene_f))
+            users_data[user_id] = copy.deepcopy(basic_resources)
             users_data[user_id]['Пол'] = 'ж'
         else:
-            scenario.update(original_scene_m)
+            scenario.update(copy.deepcopy(original_scene_m))
+            users_data[user_id]['scene'].update(copy.deepcopy(original_scene_m))
+            users_data[user_id] = copy.deepcopy(basic_resources)
             users_data[user_id]['Пол'] = 'м'
         users_data[user_id]['Выборы'].append('Начало')
         return
@@ -83,41 +90,45 @@ def finally_game(message):
         if not bool(users_data[user_id]['Советы']):
             users_data[user_id]['Советы'] = tips.copy()
         index, tip = random.choice(list(users_data[user_id]['Советы'].items()))
-        scenario[text]['addtext'] = f'\n\n{current_status}\n\n<b>Совет:</b>\n{tip['text']}'
-        scenario[text]['picture'] = tip['picture']
+        users_data[user_id]['scene'][text]['addtext'] = f'\n\n{current_status}\n\n<b>Совет:</b>\n{tip['text']}'
+        users_data[user_id]['scene'][text]['picture'] = tip['picture']
         del users_data[user_id]['Советы'][index]
-    alternate_scenario(scenario[text], text, users_data[user_id]['Выборы'], users_data[user_id]['Пол'],
-                       users_data[user_id]['Ресурсы']['Жизни'], users_data[user_id]['Ресурсы']['Репутация'],
+    alternate_scenario(users_data[user_id]['scene'][text], text, users_data[user_id]['Выборы'],
+                       users_data[user_id]['Пол'], users_data[user_id]['Ресурсы']['Жизни'],
+                       users_data[user_id]['Ресурсы']['Репутация'],
                        users_data[user_id]['Ресурсы']['Дисциплинарки'],
                        users_data[user_id]['Ресурсы']['Деньги'])
-    if 'conseq' in scenario[text].keys():
-        for key in scenario[text]['conseq']:
-            users_data[user_id]['Ресурсы'][key] += scenario[text]['conseq'][key]
-    if 'picture' not in scenario[text].keys():
-        bot.send_message(user_id, scenario[text]['text'],
-                         reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
-    elif 'addtext' in scenario[text].keys():
-        bot.send_photo(user_id, scenario[text]['picture'],
-                       caption=scenario[text]['text']+scenario[text]['addtext'],
-                       reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
+    if 'conseq' in users_data[user_id]['scene'][text].keys():
+        for key in users_data[user_id]['scene'][text]['conseq']:
+            users_data[user_id]['Ресурсы'][key] += users_data[user_id]['scene'][text]['conseq'][key]
+    if 'picture' not in users_data[user_id]['scene'][text].keys():
+        bot.send_message(user_id, users_data[user_id]['scene'][text]['text'],
+                         reply_markup=key_chooser(users_data[user_id]['scene'][text]['options']), parse_mode="HTML")
+    elif 'addtext' in users_data[user_id]['scene'][text].keys():
+        bot.send_photo(user_id, users_data[user_id]['scene'][text]['picture'],
+                       caption=users_data[user_id]['scene'][text]['text']+users_data[user_id]['scene'][text]['addtext'],
+                       reply_markup=key_chooser(users_data[user_id]['scene'][text]['options']), parse_mode="HTML")
     else:
-        if scenario[text]['picture'] == 'https://github.com/pulciblight/stuff/blob/main/pics/shokschedule.jpg?raw=true':
-            bot.send_photo(user_id, scenario[text]['picture'],
-                           caption=scenario[text]['text'], has_spoiler=True,
-                           reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
+        if users_data[user_id]['scene'][text]['picture'] == ('https://github.com/pulciblight/stuff/blob/main'
+                                                             '/pics/shokschedule.jpg?raw=true'):
+            bot.send_photo(user_id, users_data[user_id]['scene'][text]['picture'],
+                           caption=users_data[user_id]['scene'][text]['text'], has_spoiler=True,
+                           reply_markup=key_chooser(users_data[user_id]['scene'][text]['options']), parse_mode="HTML")
         else:
-            bot.send_photo(user_id, scenario[text]['picture'],
-                           caption=scenario[text]['text'],
-                           reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
-    if 'happened' in scenario[text].keys():
-        users_data[user_id]['Выборы'].append(scenario[text]['happened'])
+            bot.send_photo(user_id, users_data[user_id]['scene'][text]['picture'],
+                           caption=users_data[user_id]['scene'][text]['text'],
+                           reply_markup=key_chooser(users_data[user_id]['scene'][text]['options']), parse_mode="HTML")
+    if 'happened' in users_data[user_id]['scene'][text].keys():
+        users_data[user_id]['Выборы'].append(users_data[user_id]['scene'][text]['happened'])
     if text == 'Начать заново':
         if users_data[user_id]['Пол'] == 'ж':
             scenario.update(copy.deepcopy(original_scene_f))
+            users_data[user_id]['scene'].update(copy.deepcopy(original_scene_f))
             users_data[user_id] = copy.deepcopy(basic_resources)
             users_data[user_id]['Пол'] = 'ж'
         else:
             scenario.update(copy.deepcopy(original_scene_m))
+            users_data[user_id]['scene'].update(copy.deepcopy(original_scene_m))
             users_data[user_id] = copy.deepcopy(basic_resources)
             users_data[user_id]['Пол'] = 'м'
         users_data[user_id]['Выборы'].append('Начало')
@@ -129,10 +140,12 @@ def sex_assignment(message):
     global scenario
     if text == 'Женский':
         users_data[user_id]['Пол'] = 'ж'
-        scenario = copy.deepcopy(original_scene_f)
+        scenario.update(copy.deepcopy(original_scene_f))
+        users_data[user_id]['scene'].update(copy.deepcopy(original_scene_f))
     else:
         users_data[user_id]['Пол'] = 'м'
         scenario = copy.deepcopy(original_scene_m)
+        users_data[user_id]['scene'].update(copy.deepcopy(original_scene_m))
     bot.send_message(user_id, scenario['Начало']['text'],
                      reply_markup=key_chooser(scenario['Начало']['options']),
                      parse_mode="HTML")

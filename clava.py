@@ -106,7 +106,7 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
                                       '\n\nТы теряешь <b>1 балл</b> репутации')
         play['options'] = ['Провести день в Вышке']
         play['conseq'] = {'Репутация': -1}
-    if checkpoint == 'Провести день в Вышке' and player_money < 300:
+    if checkpoint == 'Провести день в Вышке' and player_money <= 300:
         if player_sex == 'м':
             play['text'] = ('Вашу группу задержали на парах. Уставший, ты поехал в дубки. '
                 'Дорога до Славянского бульвара была непростой: час пик раздражает тебя каждый раз. '
@@ -131,7 +131,8 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
                         'Придется убираться... или нет?')
         play['options'] = ['Убраться одному', 'Заставить соседа убираться с тобой',
                            'Просто сделать вид, что ничего не знаешь про уборку']
-        del play['conseq']
+        if 'conseq' in play.keys():
+            del play['conseq']
     if checkpoint == 'Заставить соседа убираться с тобой' and player_rep < -2:
         if player_sex == 'м':
             play['text'] = ('После долгих уговоров и упоминания всего хорошего, '
@@ -180,14 +181,14 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
                                 'Вдруг раздался ужасающий звонок в дверь.'
                                 'Это дежурка пришла напомнить про оплату общаги!')
             play['options'] = ['Оплатить', 'Попросить отложить еще ненадолго']
-    if checkpoint == 'Отдать':
+    if checkpoint == 'Отдать' and player_money < 1800:
         if 1500 <= player_money < 1800:
             play['text'] = 'К сожалению, тебе не хватит денег на сегодня, если ты вернешь долг другу.'
         elif player_money < 1500:
             play['text'] = 'К сожалению, тебе не хватает денег.'
         play['options'] = ['Попросить отложить']
         del play['conseq']
-    if checkpoint == 'Оплатить':
+    if checkpoint == 'Оплатить' and player_money < 3700:
         if 3400 <= player_money < 3700:
             play['text'] = 'К сожалению, тебе не хватит денег на сегодня, если ты сейчас оплатишь общагу.'
         elif player_money < 3400:
@@ -204,17 +205,16 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
                         'Увидев тебя, она тут же напоминает тебе о твоем долге.')
         play['options'] = ['Оплатить общагу', 'Пообещать, что оплатишь в ближайшее время']
         del play['picture']
-    if checkpoint == 'Отдать деньги':
-        if player_money < 1500:
-            play['text'] = 'К сожалению, тебе все еще не хватает денег.'
+    if checkpoint == 'Отдать деньги' and player_money < 1500:
+        play['text'] = 'К сожалению, тебе все еще не хватает денег.'
         play['options'] = ['Проигнорировать сообщение']
         del play['conseq']
-    if checkpoint == 'Оплатить общагу':
-        if player_money < 3400:
-            play['text'] = 'К сожалению, тебе все еще не хватает денег.'
+    if checkpoint == 'Оплатить общагу' and player_money < 3400:
+        play['text'] = 'К сожалению, тебе все еще не хватает денег.'
         play['options'] = ['Пообещать, что оплатишь в ближайшее время']
         del play['conseq']
-    if checkpoint == 'Закончить игру в бункер' and ('П1' and 'П2' or 'П3' and 'П2' or 'П1' and 'П3') in choices:
+    if checkpoint == 'Закончить игру в бункер' and (('П1' and 'П2' or 'П3' and 'П2') in choices or 'П1' and 'П3'
+                                                    in choices):
        if player_sex == 'м':
             play['text'] = ('Поздравляем! Тебе удалось выжить. Ты не только прекрасно провел время, '
                             'но и поднялся в глазах товарищей-дубчан.\n\n'
