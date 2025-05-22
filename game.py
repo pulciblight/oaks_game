@@ -5,14 +5,17 @@ from telebot import types
 from states import start_states
 from m_states import states_m
 from f_states import states_f
-from clava import key_chooser
-from resources import resource, day_ends
+from clava import key_chooser, alternate_scenario
+from resources import resource, day_ends, tips
 
 API_TOKEN = '7842674848:AAHaZqKSI2gplCBCPo89O52YJXauRz3DuNU'
 bot = telebot.TeleBot(API_TOKEN)
 users_data = dict()
 basic_resources = resource
-scenario = start_states.copy()
+original_scene = copy.deepcopy(start_states)
+original_scene_f = copy.deepcopy(states_f)
+original_scene_m = copy.deepcopy(states_m)
+scenario = copy.deepcopy(start_states)
 command_list = [
     types.BotCommand('start', 'Начать новую игру'),
     types.BotCommand('status', 'Посмотреть текущее состояние персонажа'),
@@ -22,20 +25,23 @@ bot.set_my_commands(command_list)
 bot.set_chat_menu_button(menu_button=types.MenuButtonCommands())
 @bot.message_handler(commands=['start', 'status', 'help'])
 def handle_commands(message):
+    global scenario
     user_id = message.chat.id
     if message.text == '/start':
         users_data[user_id] = copy.deepcopy(basic_resources)
+        users_data[user_id]['scene'] = copy.deepcopy(original_scene)
+        scenario = copy.deepcopy(original_scene)
         bot.send_message(user_id, scenario['start']['text'],
-                        reply_markup=key_chooser(start_states['start']['options']))
+                        reply_markup=key_chooser(scenario['start']['options']))
     elif message.text == '/status':
-        if 'Начало' in users_data[user_id]['Выборы']:
+        if user_id not in users_data or 'Начало' not in users_data[user_id]['Выборы']:
+            bot.send_message(user_id, 'Сначала начните игру!')
+        else:
             current_status = []
             for key in users_data[user_id]['Ресурсы']:
                 current_status.append(f'{key}: {users_data[user_id]['Ресурсы'][key]}')
             current_status = '\n'.join(current_status)
             bot.send_message(user_id, current_status, parse_mode="HTML")
-        else:
-            bot.send_message(user_id, 'Сначала начните игру!')
     elif message.text == '/help':
         bot.send_message(user_id, scenario['Узнать легенду']['text'])
 
@@ -43,14 +49,19 @@ def handle_commands(message):
 def finally_game(message):
     user_id = message.chat.id
     text = message.text
+    global scenario
     if users_data[user_id]['Ресурсы']['Жизни'] < 1:
         bot.send_photo(user_id, scenario['Смерть']['picture'],
                        caption=scenario['Смерть']['text'],
                        reply_markup=key_chooser(scenario['Смерть']['options']), parse_mode="HTML")
         if users_data[user_id]['Пол'] == 'ж':
+            scenario.update(copy.deepcopy(original_scene_f))
+            users_data[user_id]['scene'].update(copy.deepcopy(original_scene_f))
             users_data[user_id] = copy.deepcopy(basic_resources)
             users_data[user_id]['Пол'] = 'ж'
         else:
+            scenario.update(copy.deepcopy(original_scene_m))
+            users_data[user_id]['scene'].update(copy.deepcopy(original_scene_m))
             users_data[user_id] = copy.deepcopy(basic_resources)
             users_data[user_id]['Пол'] = 'м'
         users_data[user_id]['Выборы'].append('Начало')
@@ -60,9 +71,13 @@ def finally_game(message):
                        caption=scenario['Дисциплине конец']['text'],
                        reply_markup=key_chooser(scenario['Дисциплине конец']['options']), parse_mode="HTML")
         if users_data[user_id]['Пол'] == 'ж':
+            scenario.update(copy.deepcopy(original_scene_f))
+            users_data[user_id]['scene'].update(copy.deepcopy(original_scene_f))
             users_data[user_id] = copy.deepcopy(basic_resources)
             users_data[user_id]['Пол'] = 'ж'
         else:
+            scenario.update(copy.deepcopy(original_scene_m))
+            users_data[user_id]['scene'].update(copy.deepcopy(original_scene_m))
             users_data[user_id] = copy.deepcopy(basic_resources)
             users_data[user_id]['Пол'] = 'м'
         users_data[user_id]['Выборы'].append('Начало')
@@ -72,99 +87,66 @@ def finally_game(message):
         for key in users_data[user_id]['Ресурсы']:
             current_status.append(f'{key}: {users_data[user_id]['Ресурсы'][key]}')
         current_status = '\n'.join(current_status)
+        if not bool(users_data[user_id]['Советы']):
+            users_data[user_id]['Советы'] = tips.copy()
         index, tip = random.choice(list(users_data[user_id]['Советы'].items()))
-        scenario[text]['addtext'] = f'\n\n{current_status}\n\n<b>Совет:</b>\n{tip['text']}'
-        scenario[text]['picture'] = tip['picture']
+        users_data[user_id]['scene'][text]['addtext'] = f'\n\n{current_status}\n\n<b>Совет:</b>\n{tip['text']}'
+        users_data[user_id]['scene'][text]['picture'] = tip['picture']
         del users_data[user_id]['Советы'][index]
-    if text == 'Начать второй день' and 'Экзамен' in users_data[user_id]['Выборы']:
-        scenario[text]['text'] = ('Доброе утро! Надо привести себя в приличный вид и подключать прокторинг для экзамена. '
-                                    'Ты умываешься, достаешь из стиралки сырую, но чистую футболку и садишься за ноутбук. '
-                                    'Экзамен начался. Удачи!')
-        scenario[text]['picture'] = 'https://raw.githubusercontent.com/pulciblight/stuff/refs/heads/main/pics/proctor.jpg'
-        scenario[text]['options'] = ['1 вопрос']
-    if text == 'Далее' and 'Дисциплинарка на экзе' in users_data[user_id]['Выборы']:
-        if users_data[user_id]['Пол'] == 'м':
-            scenario[text]['text'] = ('Спустя какое-то время после начала экзамена '
-                                      'дверь в твою комнату резко открывается. Упс, твой сосед понял, '
-                                      'кто вчера с утра съел его бутерброд. Он начинает очень громко на тебя кричать. '
-                                      'Твой проктор посчитал это нарушением порядка проведения экзамена.'
-                                      '\n\nТы получил <b>1</b> дисциплинарку и потерял <b>1 балл</b> репутации')
-        else:
-            scenario[text]['text'] = ('Спустя какое-то время после начала экзамена '
-                                      'дверь в твою комнату резко открывается. Упс, твоя соседка поняла, '
-                                      'кто вчера с утра съел ее бутерброд. Она начинает очень громко на тебя кричать. '
-                                      'Твой проктор посчитал это нарушением порядка проведения экзамена.'
-                                      '\n\nТы получила <b>1</b> дисциплинарку и потеряла <b>1 балл</b> репутации')
-        scenario[text]['conseq'] = {'Дисциплинарки': 1, 'Репутация': -1}
-        scenario[text]['options'] = ['Надо заняться делами']
-    if text == 'Конечно хочу!' and 'Не ответил на вопрос' in users_data[user_id]['Выборы']:
-        scenario[text]['text'] = 'Ты соглашаешься. Вечер будет весёлый!'
-        scenario[text]['happened'] = 'Приехал любимый зять будем пить пииво'
-        scenario[text]['options'] = ['Закончить пару']
-        del scenario[text]['conseq']
-    if text == 'Продолжить развлечения' and users_data[user_id]['Ресурсы']['Репутация'] > -3:
-        if users_data[user_id]['Пол'] == 'м':
-            scenario[text]['text'] = ('Тебе пришло сообщение от соседа: '
-                                      '«Можно потише, вас очень хорошо слышно в соседних комнатах! '
-                                      'У меня уже голова болит от вашего ора». Пришлось стать тише.')
-        else:
-            scenario[text]['text'] = ('Тебе пришло сообщение от соседки: '
-                                      '«Можно потише, вас очень хорошо слышно в соседних комнатах! '
-                                      'У меня уже голова болит от вашего ора». Пришлось стать тише.')
-        scenario[text]['options'] = ['Надо придумать, чем заняться вечером.']
-    if text == 'Пойти на стадион' and users_data[user_id]['Ресурсы']['Жизни'] < 3:
-        if users_data[user_id]['Пол'] == 'м':
-            scenario[text]['text'] = ('Ты зашёл на стадион. Ты не знал, что перед бегом нужно размяться, '
-                                      'и побежал сразу. На середине круга у тебя что-то защемило в ноге '
-                                      'и ты упал прямо перед группой подростков. Раздался неприятный смех. '
-                                      'Кажется, тебя засмеяли местные дети, но тем не менее ты размялся!'
-                                      '\n\nТы заработал <b>1</b> жизнь')
-        else:
-            scenario[text]['text'] = ('Ты зашла на стадион. Ты не знала, что перед бегом нужно размяться, '
-                                      'и побежала сразу. На середине круга у тебя что-то защемило в ноге '
-                                      'и ты упала прямо перед группой подростков. Раздался неприятный смех. '
-                                      'Кажется, тебя засмеяли местные дети, но тем не менее ты размялась!'
-                                      '\n\nТы заработала <b>1</b> жизнь')
-        scenario[text]['options'] = ['Вернуться домой']
-        scenario[text]['conseq'] = {'Жизни': +1}
-    if 'conseq' in scenario[text].keys():
-        for key in scenario[text]['conseq']:
-            users_data[user_id]['Ресурсы'][key] += scenario[text]['conseq'][key]
-    if 'picture' not in scenario[text].keys():
-        bot.send_message(user_id, scenario[text]['text'],
-                         reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
-    elif 'addtext' in scenario[text].keys():
-        bot.send_photo(user_id, scenario[text]['picture'],
-                       caption=scenario[text]['text']+scenario[text]['addtext'],
-                       reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
+    alternate_scenario(users_data[user_id]['scene'][text], text, users_data[user_id]['Выборы'],
+                       users_data[user_id]['Пол'], users_data[user_id]['Ресурсы']['Жизни'],
+                       users_data[user_id]['Ресурсы']['Репутация'],
+                       users_data[user_id]['Ресурсы']['Дисциплинарки'],
+                       users_data[user_id]['Ресурсы']['Деньги'])
+    if 'conseq' in users_data[user_id]['scene'][text].keys():
+        for key in users_data[user_id]['scene'][text]['conseq']:
+            users_data[user_id]['Ресурсы'][key] += users_data[user_id]['scene'][text]['conseq'][key]
+    if 'picture' not in users_data[user_id]['scene'][text].keys():
+        bot.send_message(user_id, users_data[user_id]['scene'][text]['text'],
+                         reply_markup=key_chooser(users_data[user_id]['scene'][text]['options']), parse_mode="HTML")
+    elif 'addtext' in users_data[user_id]['scene'][text].keys():
+        bot.send_photo(user_id, users_data[user_id]['scene'][text]['picture'],
+                       caption=users_data[user_id]['scene'][text]['text']+users_data[user_id]['scene'][text]['addtext'],
+                       reply_markup=key_chooser(users_data[user_id]['scene'][text]['options']), parse_mode="HTML")
     else:
-        bot.send_photo(user_id, scenario[text]['picture'],
-                       caption=scenario[text]['text'],
-                       reply_markup=key_chooser(scenario[text]['options']), parse_mode="HTML")
-    if 'happened' in scenario[text].keys():
-        users_data[user_id]['Выборы'].append(scenario[text]['happened'])
+        if users_data[user_id]['scene'][text]['picture'] == ('https://github.com/pulciblight/stuff/blob/main'
+                                                             '/pics/shokschedule.jpg?raw=true'):
+            bot.send_photo(user_id, users_data[user_id]['scene'][text]['picture'],
+                           caption=users_data[user_id]['scene'][text]['text'], has_spoiler=True,
+                           reply_markup=key_chooser(users_data[user_id]['scene'][text]['options']), parse_mode="HTML")
+        else:
+            bot.send_photo(user_id, users_data[user_id]['scene'][text]['picture'],
+                           caption=users_data[user_id]['scene'][text]['text'],
+                           reply_markup=key_chooser(users_data[user_id]['scene'][text]['options']), parse_mode="HTML")
+    if 'happened' in users_data[user_id]['scene'][text].keys():
+        users_data[user_id]['Выборы'].append(users_data[user_id]['scene'][text]['happened'])
     if text == 'Начать заново':
         if users_data[user_id]['Пол'] == 'ж':
+            scenario.update(copy.deepcopy(original_scene_f))
+            users_data[user_id]['scene'].update(copy.deepcopy(original_scene_f))
             users_data[user_id] = copy.deepcopy(basic_resources)
             users_data[user_id]['Пол'] = 'ж'
         else:
+            scenario.update(copy.deepcopy(original_scene_m))
+            users_data[user_id]['scene'].update(copy.deepcopy(original_scene_m))
             users_data[user_id] = copy.deepcopy(basic_resources)
             users_data[user_id]['Пол'] = 'м'
         users_data[user_id]['Выборы'].append('Начало')
 
 @bot.message_handler(func=lambda message: message.text in ['Женский', 'Мужской'])
 def sex_assignment(message):
-    global scenario
     user_id = message.chat.id
     text = message.text
+    global scenario
     if text == 'Женский':
         users_data[user_id]['Пол'] = 'ж'
-    elif text == 'Мужской':
+        scenario.update(copy.deepcopy(original_scene_f))
+        users_data[user_id]['scene'].update(copy.deepcopy(original_scene_f))
+    else:
         users_data[user_id]['Пол'] = 'м'
-    if users_data[user_id]['Пол'] == 'ж':
-        scenario.update(states_f)
-    elif users_data[user_id]['Пол'] == 'м':
-        scenario.update(states_m)
+        scenario = copy.deepcopy(original_scene_m)
+        users_data[user_id]['scene'].update(copy.deepcopy(original_scene_m))
     bot.send_message(user_id, scenario['Начало']['text'],
-                     reply_markup=key_chooser(scenario['Начало']['options']))
+                     reply_markup=key_chooser(scenario['Начало']['options']),
+                     parse_mode="HTML")
 bot.polling()
