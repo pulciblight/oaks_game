@@ -93,7 +93,7 @@ def finally_game(message):
         users_data[user_id]['scene'][text]['addtext'] = f'\n\n{current_status}\n\n<b>Совет:</b>\n{tip['text']}'
         users_data[user_id]['scene'][text]['picture'] = tip['picture']
         del users_data[user_id]['Советы'][index]
-    alternate_scenario(users_data[user_id]['scene'][text], users_data[user_id]['scene'], text, users_data[user_id]['Выборы'],
+    alternate_scenario(users_data[user_id]['scene'][text], text, users_data[user_id]['Выборы'],
                        users_data[user_id]['Пол'], users_data[user_id]['Ресурсы']['Жизни'],
                        users_data[user_id]['Ресурсы']['Репутация'],
                        users_data[user_id]['Ресурсы']['Дисциплинарки'],
