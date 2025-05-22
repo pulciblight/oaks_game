@@ -216,7 +216,7 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
         play['options'] = ['Пообещать, что оплатишь в ближайшее время']
         del play['conseq']
     if checkpoint == 'Закончить игру в бункер':
-        if 'П1' and 'П2' in choices:
+        if 'П1' in choices and 'П2' in choices:
             if player_sex == 'м':
                 play['text'] = ('Поздравляем! Тебе удалось выжить. Ты не только прекрасно провел время, '
                                 'но и поднялся в глазах товарищей-дубчан.\n\n'
@@ -227,7 +227,7 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
                                'Ты получаешь <b>1 балл</b> репутации')
             play['options'] = ['Пойти к другу']
             play['conseq'] = {'Репутация': 1}
-        elif 'П3' and 'П2' in choices:
+        elif 'П3' in choices and 'П2' in choices:
             if player_sex == 'м':
                 play['text'] = ('Поздравляем! Тебе удалось выжить. Ты не только прекрасно провел время, '
                                 'но и поднялся в глазах товарищей-дубчан.\n\n'
@@ -238,7 +238,7 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
                                'Ты получаешь <b>1 балл</b> репутации')
             play['options'] = ['Пойти к другу']
             play['conseq'] = {'Репутация': 1}
-        elif 'П1' and 'П3' in choices:
+        elif 'П1' in choices and 'П3' in choices:
             if player_sex == 'м':
                 play['text'] = ('Поздравляем! Тебе удалось выжить. Ты не только прекрасно провел время, '
                                 'но и поднялся в глазах товарищей-дубчан.\n\n'
