@@ -181,6 +181,7 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
                                 'Вдруг раздался ужасающий звонок в дверь.'
                                 'Это дежурка пришла напомнить про оплату общаги!')
             play['options'] = ['Оплатить', 'Попросить отложить еще ненадолго']
+            play['picture'] = 'https://github.com/pulciblight/stuff/blob/main/pics/dolgen.jpg?raw=true'
     if checkpoint == 'Отдать' and player_money < 1800:
         if 1500 <= player_money < 1800:
             play['text'] = 'К сожалению, тебе не хватит денег на сегодня, если ты вернешь долг другу.'
@@ -204,7 +205,7 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
         play['text'] = ('Пока вы идёте до досуговой, навстречу выходит дежурка. '
                         'Увидев тебя, она тут же напоминает тебе о твоем долге.')
         play['options'] = ['Оплатить общагу', 'Пообещать, что оплатишь в ближайшее время']
-        del play['picture']
+        play['picture'] = 'https://github.com/pulciblight/stuff/blob/main/pics/dolgen.jpg?raw=true'
     if checkpoint == 'Отдать деньги' and player_money < 1500:
         play['text'] = 'К сожалению, тебе все еще не хватает денег.'
         play['options'] = ['Проигнорировать сообщение']
