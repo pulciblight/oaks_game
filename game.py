@@ -19,7 +19,7 @@ scenario = copy.deepcopy(start_states)
 command_list = [
     types.BotCommand('start', 'Начать новую игру'),
     types.BotCommand('status', 'Посмотреть текущее состояние персонажа'),
-    types.BotCommand('help', 'Узнать легенду и создателей')
+    types.BotCommand('help', 'Узнать правила игры')
 ]
 bot.set_my_commands(command_list)
 bot.set_chat_menu_button(menu_button=types.MenuButtonCommands())
@@ -43,7 +43,7 @@ def handle_commands(message):
             current_status = '\n'.join(current_status)
             bot.send_message(user_id, current_status, parse_mode="HTML")
     elif message.text == '/help':
-        bot.send_message(user_id, scenario['Узнать легенду']['text'])
+        bot.send_message(user_id, scenario['help']['text'])
 
 @bot.message_handler(func=lambda message: message.text in scenario.keys())
 def finally_game(message):
