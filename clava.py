@@ -36,7 +36,8 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
         play['text'] = 'Ты соглашаешься. Вечер будет весёлый!'
         play['happened'] = 'Приехал любимый зять будем пить пииво'
         play['options'] = ['Закончить пару']
-        del play['conseq']
+        if 'conseq' in play.keys():
+            del play['conseq']
     if checkpoint == 'Продолжить развлечения' and player_rep > -3:
         if player_sex == 'м':
             play['text'] = ('Тебе пришло сообщение от соседа: '
@@ -47,8 +48,10 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
                                       '«Можно потише, вас очень хорошо слышно в соседних комнатах! '
                                       'У меня уже голова болит от вашего ора». Пришлось стать тише.')
         play['options'] = ['Надо придумать, чем заняться вечером.']
-        del play['happened']
-        del play['conseq']
+        if 'happened' in play.keys():
+            del play['happened']
+        if 'conseq' in play.keys():
+            del play['conseq']
     if checkpoint == 'Пойти на стадион' and player_lives < 3:
         if player_sex == 'м':
             play['text'] = ('Ты зашёл на стадион. Ты не знал, что перед бегом нужно размяться, '
@@ -151,7 +154,8 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
                         'но она тут же вышла из сети. Придётся искать другие варианты!')
         play['options'] = ['Напишу самостоятельно', 'Закинуть промпт в chatGPT',
                            'Не сдавать работу']
-        del play['conseq']
+        if 'conseq' in play.keys():
+            del play['conseq']
     if checkpoint == 'Продолжить день' and ('Долг' in choices or 'Долг в Вышке' in choices):
         if 'Долг' in choices:
             play['text'] = ('Дедлайн прошел, а впереди, оказывается, ещё целый свободный день без поездки в Вышку. '
@@ -192,19 +196,22 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
         elif player_money < 1500:
             play['text'] = 'К сожалению, тебе не хватает денег.'
         play['options'] = ['Попросить отложить']
-        del play['conseq']
+        if 'conseq' in play.keys():
+            del play['conseq']
     if checkpoint == 'Оплатить' and player_money < 3700:
         if 3400 <= player_money < 3700:
             play['text'] = 'К сожалению, тебе не хватит денег на сегодня, если ты сейчас оплатишь общагу.'
         elif player_money < 3400:
             play['text'] = 'К сожалению, тебе не хватает денег.'
         play['options'] = ['Попросить отложить ещё ненадолго']
-        del play['conseq']
+        if 'conseq' in play.keys():
+            del play['conseq']
     if checkpoint == 'В досуговую!' and 'Должник' in choices:
         play['text'] = ('Пока вы идёте до досуговой, ты открываешь телефон и видишь сообщение '
                         'от друга с просьбой вернуть долг.')
         play['options'] = ['Проигнорировать сообщение', 'Отдать деньги']
-        del play['picture']
+        if 'picture' in play.keys():
+            del play['picture']
     if checkpoint == 'В досуговую!' and 'Дважды должник' in choices:
         play['text'] = ('Пока вы идёте до досуговой, навстречу выходит дежурка. '
                         'Увидев тебя, она тут же напоминает тебе о твоем долге.')
@@ -213,11 +220,13 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
     if checkpoint == 'Отдать деньги' and player_money < 1500:
         play['text'] = 'К сожалению, тебе все еще не хватает денег.'
         play['options'] = ['Проигнорировать сообщение']
-        del play['conseq']
+        if 'conseq' in play.keys():
+            del play['conseq']
     if checkpoint == 'Оплатить общагу' and player_money < 3400:
         play['text'] = 'К сожалению, тебе все еще не хватает денег.'
         play['options'] = ['Пообещать, что оплатишь в ближайшее время']
-        del play['conseq']
+        if 'conseq' in play.keys():
+            del play['conseq']
     if checkpoint == 'Закончить игру в бункер':
         if 'П1' in choices and 'П2' in choices:
             if player_sex == 'м':
@@ -341,5 +350,3 @@ def alternate_scenario(play, checkpoint, choices, player_sex, player_lives, play
                                 'К сожалению, тебя выселили. Хочешь попробовать заселиться в Дубки ещё раз?')
             play['options'] = ['Начать заново', 'Закончить игру']
             play['picture'] = 'https://github.com/pulciblight/stuff/blob/main/pics/youlose1.jpg?raw=true'
-
-
