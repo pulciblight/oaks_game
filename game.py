@@ -8,7 +8,7 @@ from f_states import states_f
 from clava import key_chooser, alternate_scenario
 from resources import resource, day_ends, tips
 
-API_TOKEN = '7842674848:AAHaZqKSI2gplCBCPo89O52YJXauRz3DuNU'
+API_TOKEN = '<YOURTOKEN>'
 bot = telebot.TeleBot(API_TOKEN)
 users_data = dict()
 basic_resources = resource
